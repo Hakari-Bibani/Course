@@ -87,12 +87,12 @@ def main():
     st.header("زانیاری")
     name = st.text_input(":ناو")
     school = st.text_input(":ناوی قوتابخانە")
-    username = st.text_input("ناوی بەکارهاتوو:")
+    username = st.text_input("ناسناو")
     password = st.text_input(":کۆد", type="password")
 
     # Verify password
     if password == "Hakari":
-        st.success("کۆدەکەت دروستە!")
+        st.success("کۆدەکەت دروستە")
 
         # Display questions
         st.header("وەڵامی هەموو پرسیارەکانی خوارەوە بدەرەوە")
