@@ -1,19 +1,55 @@
 import streamlit as st
 import pandas as pd
+import requests
 import os
 from datetime import datetime
 
-# Function to save user submission
-def save_to_csv(data, username):
+# GitHub configuration
+GITHUB_REPO = "Hakari-Bibani/Course"  # Replace with your repo
+GITHUB_BRANCH = "main"  # Replace with your branch name
+GITHUB_TOKEN = os.getenv("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")  # Store your token as an environment variable
+
+# Function to save data to GitHub as a CSV file
+def save_to_github(data, username):
+    if not GITHUB_TOKEN:
+        st.error("GitHub token is not set. Please configure your environment.")
+        return
+
     # Create a DataFrame
     df = pd.DataFrame([data])
-    # Create CSV file path
-    filename = f"{username}_submission.csv"
-    # Save the file in the current directory (or adjust the path as needed)
-    df.to_csv(filename, index=False)
+    csv_content = df.to_csv(index=False)
 
-    # Use GitHub API or Git integration to push to your repository
-    st.success("Submission saved successfully!")
+    # Prepare the GitHub API URL and headers
+    file_name = f"{username}_submission.csv"
+    github_api_url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{file_name}"
+    headers = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
+
+    # Check if the file already exists
+    response = requests.get(github_api_url, headers=headers)
+    if response.status_code == 200:
+        # If the file exists, get the SHA for updating
+        sha = response.json().get("sha")
+        payload = {
+            "message": f"Update submission by {username}",
+            "content": csv_content.encode("utf-8").decode("latin1"),
+            "branch": GITHUB_BRANCH,
+            "sha": sha,
+        }
+    else:
+        # If the file does not exist, create a new one
+        payload = {
+            "message": f"Add submission by {username}",
+            "content": csv_content.encode("utf-8").decode("latin1"),
+            "branch": GITHUB_BRANCH,
+        }
+
+    # Make a PUT request to upload the file
+    response = requests.put(github_api_url, json=payload, headers=headers)
+
+    if response.status_code in [200, 201]:
+        st.success(f"Submission saved to GitHub as {file_name}")
+    else:
+        st.error(f"Failed to save submission to GitHub: {response.json()}")
 
 # Chemistry test questions
 questions = [
@@ -43,7 +79,7 @@ def main():
     # Verify password
     if password == "Hakari":
         st.success("Password verified. You may proceed!")
-        
+
         # Display questions
         answers = {}
         for i, q in enumerate(questions, 1):
@@ -65,8 +101,8 @@ def main():
                     **answers,
                 }
 
-                # Save submission as a CSV file
-                save_to_csv(submission_data, username)
+                # Save submission to GitHub
+                save_to_github(submission_data, username)
 
     elif password and password != "Hakari":
         st.error("Invalid password! Please try again.")
