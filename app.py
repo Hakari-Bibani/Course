@@ -1,3 +1,4 @@
+import base64
 import streamlit as st
 import pandas as pd
 import requests
@@ -8,12 +9,6 @@ GITHUB_REPO = "Hakari-Bibani/Course"  # Your GitHub repository
 GITHUB_BRANCH = "main"  # Branch name
 GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
 
-# Debugging: Check if the token is correctly retrieved
-if GITHUB_TOKEN:
-    st.write("Debugging: GitHub Token starts with:", GITHUB_TOKEN[:10])
-else:
-    st.error("GitHub token not found. Please configure your environment.")
-
 # Function to save data to GitHub as a CSV file
 def save_to_github(data, username):
     if not GITHUB_TOKEN:
@@ -23,6 +18,9 @@ def save_to_github(data, username):
     # Create a DataFrame
     df = pd.DataFrame([data])
     csv_content = df.to_csv(index=False)
+
+    # Encode CSV content in Base64
+    base64_content = base64.b64encode(csv_content.encode("utf-8")).decode("utf-8")
 
     # Prepare the GitHub API URL and headers
     file_name = f"{username}_submission.csv"
@@ -36,7 +34,7 @@ def save_to_github(data, username):
         sha = response.json().get("sha")
         payload = {
             "message": f"Update submission by {username}",
-            "content": csv_content.encode("utf-8").decode("latin1"),
+            "content": base64_content,
             "branch": GITHUB_BRANCH,
             "sha": sha,
         }
@@ -44,7 +42,7 @@ def save_to_github(data, username):
         # If the file does not exist, create a new one
         payload = {
             "message": f"Add submission by {username}",
-            "content": csv_content.encode("utf-8").decode("latin1"),
+            "content": base64_content,
             "branch": GITHUB_BRANCH,
         }
     else:
