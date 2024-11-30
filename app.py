@@ -2,9 +2,10 @@ import streamlit as st
 import pandas as pd
 import requests
 import base64
+from io import StringIO  # Import StringIO to handle string-based file reading
 from datetime import datetime
 from question import questions
-from style import set_style, show_header_image  # Import styling functions
+from style import set_style, show_header_image
 
 # GitHub configuration
 GITHUB_REPO = "Hakari-Bibani/Course"
@@ -30,7 +31,7 @@ def fetch_existing_data():
         content = response.json().get("content")
         sha = response.json().get("sha")
         decoded_content = base64.b64decode(content).decode("utf-8")
-        existing_df = pd.read_csv(pd.compat.StringIO(decoded_content))
+        existing_df = pd.read_csv(StringIO(decoded_content))  # Use StringIO for reading CSV content
         return existing_df, sha
     elif response.status_code == 404:
         # File does not exist
