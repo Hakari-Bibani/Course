@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 from datetime import datetime
-from question import questions  # Import questions with marks
+from question import questions  # Import questions with marks and correct answers
 
 # GitHub configuration
 GITHUB_REPO = "Hakari-Bibani/Course"
@@ -94,8 +94,8 @@ def main():
                 # Calculate grade
                 total_marks = calculate_grade(answers)
 
-                # Display grade
-                st.success(f"Your total score is: {total_marks}")
+                # Display total marks
+                st.success(f"Your total marks: {total_marks}")
 
                 # Collect user data and answers
                 submission_data = {
