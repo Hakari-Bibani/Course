@@ -1,12 +1,13 @@
 # question.py
 
 questions = [
-    {"question": "What is the atomic number of Hydrogen?", "options": ["1", "2", "3", "4"], "correct": "1", "marks": 2},
-    {"question": "What is the chemical symbol for Gold?", "options": ["Au", "Ag", "Pb", "Pt"], "correct": "Au", "marks": 2},
-    {"question": "What is the formula for water?", "options": ["H2O", "O2", "CO2", "CH4"], "correct": "H2O", "marks": 2},
-    {"question": "What is the pH of a neutral solution?", "options": ["7", "5", "9", "1"], "correct": "7", "marks": 2},
-    {"question": "Which gas is essential for respiration?", "options": ["Oxygen", "Carbon Dioxide", "Nitrogen", "Helium"], "correct": "Oxygen", "marks": 2},
-    {"question": "What is the chemical symbol for Sodium?", "options": ["Na", "K", "Ca", "Mg"], "correct": "Na", "marks": 2},
-    {"question": "Which of these is a noble gas?", "options": ["Argon", "Hydrogen", "Oxygen", "Carbon"], "correct": "Argon", "marks": 4},
-    {"question": "What is the chemical formula for table salt?", "options": ["NaCl", "KCl", "MgCl2", "CaCl2"], "correct": "NaCl", "marks": 4},
+    {"question": "ئەو ترشەی بەشیوەیەکی بنچینەی لە دروستکردنی تەقەمەنی و دەرماندا بەکاردێت بریتیە لە ": ["ترشی هایدرۆکلۆریک", "ترشی فۆسفۆریک", "ترشی نیتریک", "ترشی گۆگردیک"], "correct": "ترشی نیتریک", "marks": 2},
+    {"question": "کام لەم پێکهێنەرانەی ئاوەگیراوەی ترشی سرکیک زۆەرترین خەستی هەیە": ["یەکسانن لە خەستی دا", "CH₃COOH
+", "CH₃COO⁻", "H₃O⁺"], "correct": "CH₃COOH", "marks": 2},
+    {"question": "لە کاتی کارلێکی کانزای باریۆم و ترشی گۆگردیک دا گازی ......بەرهەم دێت": ["H₂", "O₂", "SO₂", "SO₃"], "correct": "H₂", "marks": 2},
+    {"question": "..... بۆ دەرهێنان و پوختکردنی مەگنیسیۆم بەکاردێت": ["HNO₃", "CH₃COOH", "HCl", "H₂SO₄"], "correct": "HCl", "marks": 2},
+    {"question": " Ni²⁺ + H₂O → (Ni(H₂O)ₙ)⁺  لەم کارلێکە دا ", "options": ["ئەلیکترۆن بەخشە Ni²⁺", "پرۆتۆن بەخشە Ni²⁺" , "ئاو پرۆتۆن وەرگرە", "ئاو ئەلیکترۆن بەخشە"], "correct": "ئاو ئەلیکترۆن بەخشە", "marks": 2}, 
+    {"question": "CN⁻ + H₃O⁺ → HCN + H₂O هاوەڵجووتەکان دیاری بکە", "options": ["CN⁻ , H₂O / HCN , H₃O⁺", "CN⁻ , HCN / H₃O⁺ , H₂O", "H₂O , HCN / H₃O⁺ , CN⁻ ", "هیچیان"], "correct": "CN⁻ , HCN / H₃O⁺ , H₂O", "marks": 2}, 
+    {"question": "ئایۆنە هاوکێشەی پەتی کارلێكی نێوان کانزای ئەلەمنیۆم و ترشی گۆگردیک دەکاتە ?", "options": ["Al + 2H₃O⁺ → Al³⁺ + H₂ + 2H₂O", "2Al + 4H₃O⁺ → 2Al³⁺ + 2H₂ + 4H₂O", "2Al + 6H₃O⁺ → 2Al³⁺ + 3H₂ + 6H₂O", "H₃O⁺ + OH⁻  → 2H₂O"], "correct": "2Al + 6H₃O⁺ → 2Al³⁺ + 3H₂ + 6H₂O", "marks": 4},
+    {"question": "لە ئاوە گیراوەی ترشی نیترۆزدا کام لە مانە بەهێزترین ترشە", "options": ["H₃O⁺", "NO₂⁻", "H₂O", "HNO₂"], "correct": "H₃O⁺", "marks": 4},
 ]
