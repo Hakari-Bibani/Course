@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import requests
+import base64  # Import for Base64 encoding
 from datetime import datetime
 from question import questions  # Import questions with marks and correct answers
 
@@ -26,6 +27,8 @@ def save_to_github(data, username):
     # Create a DataFrame
     df = pd.DataFrame([data])
     csv_content = df.to_csv(index=False)
+    # Encode the CSV content in Base64
+    encoded_content = base64.b64encode(csv_content.encode()).decode()
 
     # Prepare the GitHub API URL and headers
     file_name = f"{username}_submission.csv"
@@ -39,7 +42,7 @@ def save_to_github(data, username):
         sha = response.json().get("sha")
         payload = {
             "message": f"Update submission by {username}",
-            "content": csv_content.encode("utf-8").decode("latin1"),
+            "content": encoded_content,
             "branch": GITHUB_BRANCH,
             "sha": sha,
         }
@@ -47,7 +50,7 @@ def save_to_github(data, username):
         # If the file does not exist, create a new one
         payload = {
             "message": f"Add submission by {username}",
-            "content": csv_content.encode("utf-8").decode("latin1"),
+            "content": encoded_content,
             "branch": GITHUB_BRANCH,
         }
     else:
