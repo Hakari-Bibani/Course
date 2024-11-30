@@ -5,7 +5,7 @@ import streamlit as st
 def set_style():
     # Set custom Streamlit page configuration
     st.set_page_config(
-        page_title="Chemistry Test",
+        page_title="تاقیکردنەوەی بەندی دووەم - کیمیا",
         page_icon="🧪",
         layout="centered",
     )
