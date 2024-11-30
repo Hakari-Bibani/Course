@@ -6,7 +6,7 @@ from datetime import datetime
 # GitHub configuration
 GITHUB_REPO = "Hakari-Bibani/Course"  # Your GitHub repository
 GITHUB_BRANCH = "main"  # Branch name
-GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]  # GitHub token securely retrieved from secrets
+GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]  # GitHub token securely retrieved from Streamlit Secrets
 
 # Function to save data to GitHub as a CSV file
 def save_to_github(data, username):
@@ -34,13 +34,16 @@ def save_to_github(data, username):
             "branch": GITHUB_BRANCH,
             "sha": sha,
         }
-    else:
+    elif response.status_code == 404:
         # If the file does not exist, create a new one
         payload = {
             "message": f"Add submission by {username}",
             "content": csv_content.encode("utf-8").decode("latin1"),
             "branch": GITHUB_BRANCH,
         }
+    else:
+        st.error(f"Failed to fetch file status from GitHub: {response.json()}")
+        return
 
     # Make a PUT request to upload the file
     response = requests.put(github_api_url, json=payload, headers=headers)
@@ -68,6 +71,13 @@ def main():
 
     # Display an image
     st.image("images/test_image.jpg", caption="Welcome to the Chemistry Test")
+
+    # Debugging: Verify GitHub token
+    if not GITHUB_TOKEN:
+        st.error("GitHub token is not set. Please configure your environment.")
+    else:
+        st.success("GitHub token loaded successfully.")
+        st.write("GitHub token starts with:", GITHUB_TOKEN[:10] + "...")
 
     # User details
     name = st.text_input("Name:")
