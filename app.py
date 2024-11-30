@@ -3,7 +3,8 @@ import pandas as pd
 import requests
 import base64
 from datetime import datetime
-from question import questions  # Import questions with marks and correct answers
+from question import questions
+from style import set_style, show_header_image  # Import styling functions
 
 # GitHub configuration
 GITHUB_REPO = "Hakari-Bibani/Course"
@@ -75,14 +76,14 @@ def save_to_github(new_data):
     else:
         st.error(f"Failed to save submission to GitHub: {response.json()}")
 
-# Streamlit app
+# Main Streamlit app
 def main():
+    set_style()  # Apply custom styling
     st.title("Chemistry Test")
-
-    # Display an image
-    st.image("images/test_image.jpg", caption="Welcome to the Chemistry Test")
+    show_header_image()
 
     # User details
+    st.header("Participant Details")
     name = st.text_input("Name:")
     school = st.text_input("School:")
     username = st.text_input("Username:")
@@ -93,6 +94,7 @@ def main():
         st.success("Password verified. You may proceed!")
 
         # Display questions
+        st.header("Answer the Questions Below")
         answers = {}
         for i, q in enumerate(questions, 1):
             st.write(f"**Q{i}: {q['question']}**")
