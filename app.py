@@ -16,8 +16,8 @@ FILE_NAME = "submissions.csv"  # Single CSV file for all submissions
 # Function to calculate grade
 def calculate_grade(answers):
     total_marks = 0
-    for i, q in enumerate(questions):
-        if answers.get(f"Q{i + 1}") == q["correct"]:
+    for q in questions:
+        if answers.get(q["question"]) == q["correct"]:
             total_marks += q["marks"]
     return total_marks
 
@@ -73,7 +73,7 @@ def save_to_github(new_data):
     response = requests.put(github_api_url, json=payload, headers=headers)
 
     if response.status_code in [200, 201]:
-        st.success("Thank you for participation!")
+        st.success("سوپاس بۆ بەشداریکردنەکەت!")
     else:
         st.error(f"Failed to save submission to GitHub: {response.json()}")
 
@@ -97,15 +97,15 @@ def main():
         # Display questions
         st.header("وەڵامی هەموو پرسیارەکانی خوارەوە بدەرەوە")
         answers = {}
-        for i, q in enumerate(questions, 1):
-            st.write(f"**Q{i}: {q['question']}**")
-            answers[f"Q{i}"] = st.radio(f"Select an answer for Q{i}:", q["options"], key=f"q{i}")
+        for q in questions:
+            st.write(f"**{q['question']}**")
+            answers[q['question']] = st.radio("", q["options"], key=q['question'])
 
         # Submit button
         if st.button("ناردن"):
             # Ensure all questions are answered
             if None in answers.values():
-                st.error("Please answer all questions!")
+                st.error("تکایە هەموو پرسیارەکان وەڵیبەدە.")
             else:
                 # Calculate grade
                 total_marks = calculate_grade(answers)
