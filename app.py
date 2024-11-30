@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import requests
-import base64  # Import for Base64 encoding
+import base64
 from datetime import datetime
 from question import questions  # Import questions with marks and correct answers
 
@@ -9,6 +9,7 @@ from question import questions  # Import questions with marks and correct answer
 GITHUB_REPO = "Hakari-Bibani/Course"
 GITHUB_BRANCH = "main"
 GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
+FILE_NAME = "submissions.csv"  # Single CSV file for all submissions
 
 # Function to calculate grade
 def calculate_grade(answers):
@@ -18,50 +19,59 @@ def calculate_grade(answers):
             total_marks += q["marks"]
     return total_marks
 
-# Function to save data to GitHub as a CSV file
-def save_to_github(data, username):
-    if not GITHUB_TOKEN:
-        st.error("GitHub token is not set. Please configure your environment.")
-        return
-
-    # Create a DataFrame
-    df = pd.DataFrame([data])
-    csv_content = df.to_csv(index=False)
-    # Encode the CSV content in Base64
-    encoded_content = base64.b64encode(csv_content.encode()).decode()
-
-    # Prepare the GitHub API URL and headers
-    file_name = f"{username}_submission.csv"
-    github_api_url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{file_name}"
+# Function to fetch existing CSV file from GitHub
+def fetch_existing_data():
+    github_api_url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FILE_NAME}"
     headers = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
 
-    # Check if the file already exists
     response = requests.get(github_api_url, headers=headers)
     if response.status_code == 200:
-        # If the file exists, get the SHA for updating
+        content = response.json().get("content")
         sha = response.json().get("sha")
-        payload = {
-            "message": f"Update submission by {username}",
-            "content": encoded_content,
-            "branch": GITHUB_BRANCH,
-            "sha": sha,
-        }
+        decoded_content = base64.b64decode(content).decode("utf-8")
+        existing_df = pd.read_csv(pd.compat.StringIO(decoded_content))
+        return existing_df, sha
     elif response.status_code == 404:
-        # If the file does not exist, create a new one
-        payload = {
-            "message": f"Add submission by {username}",
-            "content": encoded_content,
-            "branch": GITHUB_BRANCH,
-        }
+        # File does not exist
+        return None, None
     else:
-        st.error(f"Failed to fetch file status from GitHub: {response.json()}")
-        return
+        st.error(f"Failed to fetch existing file from GitHub: {response.json()}")
+        return None, None
+
+# Function to save data to GitHub as a single CSV file
+def save_to_github(new_data):
+    # Fetch existing data
+    existing_df, sha = fetch_existing_data()
+    if existing_df is not None:
+        # Append new data to existing data
+        updated_df = pd.concat([existing_df, new_data], ignore_index=True)
+    else:
+        # If no existing data, create new DataFrame
+        updated_df = new_data
+
+    # Convert updated data to CSV
+    csv_content = updated_df.to_csv(index=False)
+    # Encode CSV content in Base64
+    encoded_content = base64.b64encode(csv_content.encode()).decode()
+
+    # Prepare GitHub API payload
+    github_api_url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FILE_NAME}"
+    headers = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
+    payload = {
+        "message": "Update submissions",
+        "content": encoded_content,
+        "branch": GITHUB_BRANCH,
+    }
+
+    if sha:
+        # Include SHA if file exists
+        payload["sha"] = sha
 
     # Make a PUT request to upload the file
     response = requests.put(github_api_url, json=payload, headers=headers)
 
     if response.status_code in [200, 201]:
-        st.success(f"Submission saved to GitHub as {file_name}")
+        st.success("Thank you for participation!")
     else:
         st.error(f"Failed to save submission to GitHub: {response.json()}")
 
@@ -97,21 +107,18 @@ def main():
                 # Calculate grade
                 total_marks = calculate_grade(answers)
 
-                # Display total marks
-                st.success(f"Your total marks: {total_marks}")
-
                 # Collect user data and answers
-                submission_data = {
+                submission_data = pd.DataFrame([{
                     "Name": name,
                     "School": school,
                     "Username": username,
                     "Total Marks": total_marks,
                     "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     **answers,
-                }
+                }])
 
                 # Save submission to GitHub
-                save_to_github(submission_data, username)
+                save_to_github(submission_data)
 
     elif password and password != "Hakari":
         st.error("Invalid password! Please try again.")
