@@ -6,7 +6,13 @@ from datetime import datetime
 # GitHub configuration
 GITHUB_REPO = "Hakari-Bibani/Course"  # Your GitHub repository
 GITHUB_BRANCH = "main"  # Branch name
-GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]  # GitHub token securely retrieved from Streamlit Secrets
+GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
+
+# Debugging: Check if the token is correctly retrieved
+if GITHUB_TOKEN:
+    st.write("Debugging: GitHub Token starts with:", GITHUB_TOKEN[:10])
+else:
+    st.error("GitHub token not found. Please configure your environment.")
 
 # Function to save data to GitHub as a CSV file
 def save_to_github(data, username):
@@ -71,13 +77,6 @@ def main():
 
     # Display an image
     st.image("images/test_image.jpg", caption="Welcome to the Chemistry Test")
-
-    # Debugging: Verify GitHub token
-    if not GITHUB_TOKEN:
-        st.error("GitHub token is not set. Please configure your environment.")
-    else:
-        st.success("GitHub token loaded successfully.")
-        st.write("GitHub token starts with:", GITHUB_TOKEN[:10] + "...")
 
     # User details
     name = st.text_input("Name:")
