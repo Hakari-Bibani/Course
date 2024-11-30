@@ -1,13 +1,19 @@
-import base64
 import streamlit as st
 import pandas as pd
 import requests
 from datetime import datetime
+from question import questions  # Import questions from question.py
 
 # GitHub configuration
 GITHUB_REPO = "Hakari-Bibani/Course"  # Your GitHub repository
 GITHUB_BRANCH = "main"  # Branch name
 GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
+
+# Debugging: Check if the token is correctly retrieved
+if GITHUB_TOKEN:
+    st.write("Debugging: GitHub Token starts with:", GITHUB_TOKEN[:10])
+else:
+    st.error("GitHub token not found. Please configure your environment.")
 
 # Function to save data to GitHub as a CSV file
 def save_to_github(data, username):
@@ -18,9 +24,6 @@ def save_to_github(data, username):
     # Create a DataFrame
     df = pd.DataFrame([data])
     csv_content = df.to_csv(index=False)
-
-    # Encode CSV content in Base64
-    base64_content = base64.b64encode(csv_content.encode("utf-8")).decode("utf-8")
 
     # Prepare the GitHub API URL and headers
     file_name = f"{username}_submission.csv"
@@ -34,7 +37,7 @@ def save_to_github(data, username):
         sha = response.json().get("sha")
         payload = {
             "message": f"Update submission by {username}",
-            "content": base64_content,
+            "content": csv_content.encode("utf-8").decode("latin1"),
             "branch": GITHUB_BRANCH,
             "sha": sha,
         }
@@ -42,7 +45,7 @@ def save_to_github(data, username):
         # If the file does not exist, create a new one
         payload = {
             "message": f"Add submission by {username}",
-            "content": base64_content,
+            "content": csv_content.encode("utf-8").decode("latin1"),
             "branch": GITHUB_BRANCH,
         }
     else:
@@ -56,18 +59,6 @@ def save_to_github(data, username):
         st.success(f"Submission saved to GitHub as {file_name}")
     else:
         st.error(f"Failed to save submission to GitHub: {response.json()}")
-
-# Chemistry test questions
-questions = [
-    {"question": "What is the atomic number of Hydrogen?", "options": ["1", "2", "3", "4"]},
-    {"question": "What is the chemical symbol for Gold?", "options": ["Au", "Ag", "Pb", "Pt"]},
-    {"question": "What is the formula for water?", "options": ["H2O", "O2", "CO2", "CH4"]},
-    {"question": "What is the pH of a neutral solution?", "options": ["7", "5", "9", "1"]},
-    {"question": "Which gas is essential for respiration?", "options": ["Oxygen", "Carbon Dioxide", "Nitrogen", "Helium"]},
-    {"question": "What is the chemical symbol for Sodium?", "options": ["Na", "K", "Ca", "Mg"]},
-    {"question": "Which of these is a noble gas?", "options": ["Argon", "Hydrogen", "Oxygen", "Carbon"]},
-    {"question": "What is the chemical formula for table salt?", "options": ["NaCl", "KCl", "MgCl2", "CaCl2"]},
-]
 
 # Streamlit app
 def main():
@@ -88,7 +79,7 @@ def main():
 
         # Display questions
         answers = {}
-        for i, q in enumerate(questions, 1):
+        for i, q in enumerate(questions, 1):  # Use questions from question.py
             st.write(f"**Q{i}: {q['question']}**")
             answers[f"Q{i}"] = st.radio(f"Select an answer for Q{i}:", q["options"], key=f"q{i}")
 
