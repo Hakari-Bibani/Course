@@ -2,18 +2,20 @@ import streamlit as st
 import pandas as pd
 import requests
 from datetime import datetime
-from question import questions  # Import questions from question.py
+from question import questions  # Import questions with marks
 
 # GitHub configuration
-GITHUB_REPO = "Hakari-Bibani/Course"  # Your GitHub repository
-GITHUB_BRANCH = "main"  # Branch name
+GITHUB_REPO = "Hakari-Bibani/Course"
+GITHUB_BRANCH = "main"
 GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
 
-# Debugging: Check if the token is correctly retrieved
-if GITHUB_TOKEN:
-    st.write("Debugging: GitHub Token starts with:", GITHUB_TOKEN[:10])
-else:
-    st.error("GitHub token not found. Please configure your environment.")
+# Function to calculate grade
+def calculate_grade(answers):
+    total_marks = 0
+    for i, q in enumerate(questions):
+        if answers.get(f"Q{i + 1}") == q["correct"]:
+            total_marks += q["marks"]
+    return total_marks
 
 # Function to save data to GitHub as a CSV file
 def save_to_github(data, username):
@@ -79,7 +81,7 @@ def main():
 
         # Display questions
         answers = {}
-        for i, q in enumerate(questions, 1):  # Use questions from question.py
+        for i, q in enumerate(questions, 1):
             st.write(f"**Q{i}: {q['question']}**")
             answers[f"Q{i}"] = st.radio(f"Select an answer for Q{i}:", q["options"], key=f"q{i}")
 
@@ -89,11 +91,18 @@ def main():
             if None in answers.values():
                 st.error("Please answer all questions!")
             else:
+                # Calculate grade
+                total_marks = calculate_grade(answers)
+
+                # Display grade
+                st.success(f"Your total score is: {total_marks}")
+
                 # Collect user data and answers
                 submission_data = {
                     "Name": name,
                     "School": school,
                     "Username": username,
+                    "Total Marks": total_marks,
                     "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     **answers,
                 }
