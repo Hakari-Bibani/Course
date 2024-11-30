@@ -80,29 +80,29 @@ def save_to_github(new_data):
 # Main Streamlit app
 def main():
     set_style()  # Apply custom styling
-    st.title("Chemistry Test")
+    st.title("تاقیکردنەوەی بەندی دووەم - کیمیا- مامۆستا هەکاری")
     show_header_image()
 
     # User details
-    st.header("Participant Details")
-    name = st.text_input("Name:")
-    school = st.text_input("School:")
-    username = st.text_input("Username:")
-    password = st.text_input("Password:", type="password")
+    st.header("زانیاری")
+    name = st.text_input(":ناو")
+    school = st.text_input(":ناوی قوتابخانە")
+    username = st.text_input("ناوی بەکارهاتوو:")
+    password = st.text_input(":کۆد", type="password")
 
     # Verify password
     if password == "Hakari":
-        st.success("Password verified. You may proceed!")
+        st.success("کۆدەکەت دروستە!")
 
         # Display questions
-        st.header("Answer the Questions Below")
+        st.header("وەڵامی هەموو پرسیارەکانی خوارەوە بدەرەوە")
         answers = {}
         for i, q in enumerate(questions, 1):
             st.write(f"**Q{i}: {q['question']}**")
             answers[f"Q{i}"] = st.radio(f"Select an answer for Q{i}:", q["options"], key=f"q{i}")
 
         # Submit button
-        if st.button("Submit"):
+        if st.button("ناردن"):
             # Ensure all questions are answered
             if None in answers.values():
                 st.error("Please answer all questions!")
@@ -124,7 +124,7 @@ def main():
                 save_to_github(submission_data)
 
     elif password and password != "Hakari":
-        st.error("Invalid password! Please try again.")
+        st.error("هەڵەیە، کۆدی دروست بنووسە.")
 
 if __name__ == "__main__":
     main()
